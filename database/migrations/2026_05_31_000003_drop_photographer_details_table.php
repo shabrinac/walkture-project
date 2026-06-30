@@ -1,7 +1,6 @@
 <?php
 
 use Illuminate\Database\Migrations\Migration;
-use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
@@ -13,8 +12,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        // Gunakan CASCADE agar FK yang bergantung ikut dihapus
-        DB::statement('DROP TABLE IF EXISTS photographer_details CASCADE');
+        // Gunakan Schema::dropIfExists agar kompatibel di semua driver (SQLite, PostgreSQL)
+        Schema::dropIfExists('photographer_details');
     }
 
     public function down(): void
