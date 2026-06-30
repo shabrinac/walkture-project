@@ -14,17 +14,14 @@ class ContactSupportMail extends Mailable
     use Queueable, SerializesModels;
 
     public function __construct(
-        public readonly string $senderName,
-        public readonly string $senderEmail,
-        public readonly string $messageSubject,
-        public readonly string $body,
+        public readonly string $userSubject,
+        public readonly string $messageBody,
     ) {}
 
     public function envelope(): Envelope
     {
         return new Envelope(
-            subject: '[Walkture Support] ' . $this->messageSubject,
-            replyTo: [$this->senderEmail],
+            subject: '[Walkture Support] ' . $this->userSubject,
         );
     }
 

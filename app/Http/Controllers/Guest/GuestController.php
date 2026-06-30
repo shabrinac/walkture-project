@@ -41,20 +41,18 @@ class GuestController extends Controller
         // Persist to DB
         ContactMessage::create($validated);
 
+        // Extract mail-specific variables
+        $userSubject = $request->input('subject');
+        $messageBody = $request->input('message');
+
         // Forward email to support inbox
         try {
-            Mail::to('maureenthana@gmail.com')->send(new ContactSupportMail(
-                senderName:  $validated['name'],
-                senderEmail: $validated['email'],
-                messageSubject: $validated['subject'],
-                body:        $validated['message'],
-            ));
+            Mail::to('rinaqonitah@gmail.com')->send(new ContactSupportMail($userSubject, $messageBody));
         } catch (\Exception $e) {
             // Log silently — don't fail the user if mail config is missing
             Log::warning('Contact form email failed: ' . $e->getMessage());
         }
 
-        return redirect()->route('guest.contact')
-                         ->with('success', 'Your message has been sent! We\'ll get back to you within 24 hours.');
+        return back()->with('success', 'Your message has been sent successfully!');
     }
 }

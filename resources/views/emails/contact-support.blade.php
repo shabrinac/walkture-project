@@ -28,24 +28,12 @@
         </div>
         <div class="body">
             <div style="margin-bottom:14px">
-                <div class="field-label">From</div>
-                <div class="field-value">{{ $senderName }}</div>
-            </div>
-            <div style="margin-bottom:14px">
-                <div class="field-label">Email</div>
-                <div class="field-value"><a href="mailto:{{ $senderEmail }}" style="color:#43664c">{{ $senderEmail }}</a></div>
-            </div>
-            <div style="margin-bottom:14px">
                 <div class="field-label">Subject</div>
-                <div class="field-value">{{ $messageSubject }}</div>
+                <div class="field-value">{{ $userSubject }}</div>
             </div>
             <hr class="divider">
             <div class="field-label" style="margin-bottom:8px">Message</div>
-            <div class="message-box">{{ $body }}</div>
-
-            <div style="text-align:center">
-                <a href="mailto:{{ $senderEmail }}" class="reply-btn">Reply to {{ $senderName }}</a>
-            </div>
+            <div class="message-box">{{ $messageBody }}</div>
         </div>
         <div class="footer">
             This message was submitted via the Walkture contact form at {{ now()->format('d M Y, H:i') }} WITA.<br>
