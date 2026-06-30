@@ -1,0 +1,207 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    * {
+        box-sizing: border-box;
+    }
+
+    html {
+        font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
+        -webkit-font-smoothing: antialiased;
+        -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+        @apply bg-neutral-50 text-neutral-700;
+    }
+
+    ::-webkit-scrollbar {
+        width: 5px;
+        height: 5px;
+    }
+
+    ::-webkit-scrollbar-track {
+        @apply bg-transparent;
+    }
+
+    ::-webkit-scrollbar-thumb {
+        @apply bg-neutral-300 rounded-full;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        @apply bg-neutral-400;
+    }
+}
+
+@layer components {
+    /* ─── Sidebar ─────────────────────────────────────────────── */
+    .sidebar {
+        @apply fixed left-0 top-0 h-screen w-64 bg-white shadow-sidebar z-40 flex flex-col transition-all duration-300;
+    }
+
+    .sidebar-logo {
+        @apply px-6 py-5 border-b border-neutral-100;
+    }
+
+    .sidebar-nav-item {
+        @apply flex items-center gap-3 px-4 py-3 mx-2 rounded-xl text-sm font-medium text-neutral-500 transition-all duration-200 cursor-pointer hover:bg-neutral-50 hover:text-neutral-800;
+    }
+
+    .sidebar-nav-item.active {
+        @apply bg-sage-50 text-sage-600 font-semibold;
+    }
+
+    .sidebar-nav-item svg {
+        @apply w-5 h-5 flex-shrink-0;
+    }
+
+    .sidebar-nav-item.active svg {
+        @apply text-sage-500;
+    }
+
+    /* ─── Main Layout ─────────────────────────────────────────── */
+    .main-content {
+        @apply ml-64 min-h-screen bg-neutral-50;
+    }
+
+    .page-header {
+        @apply px-8 pt-8 pb-4;
+    }
+
+    .page-body {
+        @apply px-8 pb-8;
+    }
+
+    /* ─── Cards ───────────────────────────────────────────────── */
+    .card {
+        @apply bg-white rounded-2xl shadow-card p-5 transition-shadow duration-200;
+    }
+
+    .card:hover {
+        @apply shadow-card-hover;
+    }
+
+    .card-label {
+        @apply text-xs font-semibold uppercase tracking-wider text-neutral-400;
+    }
+
+    .card-value {
+        @apply text-2xl font-bold text-neutral-900;
+    }
+
+    /* ─── Buttons ─────────────────────────────────────────────── */
+    .btn-primary {
+        @apply inline-flex items-center gap-2 px-6 py-2.5 bg-sage-400 hover:bg-sage-500 text-white text-sm font-semibold rounded-xl transition-all duration-200 shadow-sm hover:shadow-md active:scale-95;
+    }
+
+    .btn-secondary {
+        @apply inline-flex items-center gap-2 px-6 py-2.5 bg-white hover:bg-neutral-50 text-neutral-700 text-sm font-semibold rounded-xl border border-neutral-200 transition-all duration-200 hover:border-neutral-300 active:scale-95;
+    }
+
+    .btn-ghost {
+        @apply inline-flex items-center gap-2 px-3 py-1.5 text-sm font-medium text-neutral-500 hover:text-neutral-800 hover:bg-neutral-100 rounded-lg transition-all duration-150;
+    }
+
+    .btn-danger {
+        @apply inline-flex items-center gap-2 px-6 py-2.5 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold rounded-xl transition-all duration-200 active:scale-95;
+    }
+
+    /* ─── Pills & Badges ──────────────────────────────────────── */
+    .pill {
+        @apply inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold;
+    }
+
+    .pill-sage {
+        @apply pill bg-sage-50 text-sage-600;
+    }
+
+    .pill-premium {
+        @apply pill bg-amber-50 text-amber-600 border border-amber-200;
+    }
+
+    .pill-pending {
+        @apply pill bg-yellow-50 text-yellow-700;
+    }
+
+    .pill-confirmed {
+        @apply pill bg-green-50 text-green-700;
+    }
+
+    .pill-active {
+        @apply pill bg-blue-50 text-blue-700;
+    }
+
+    /* ─── Form elements ───────────────────────────────────────── */
+    .input {
+        @apply w-full px-4 py-2.5 border border-neutral-200 rounded-xl text-sm text-neutral-800 placeholder-neutral-400 focus:outline-none focus:ring-2 focus:ring-sage-300 focus:border-sage-400 transition-all duration-150 bg-white;
+    }
+
+    .label {
+        @apply block text-xs font-semibold text-neutral-500 mb-1.5 uppercase tracking-wider;
+    }
+
+    /* ─── Stars ───────────────────────────────────────────────── */
+    .star-rating {
+        @apply text-amber-400 text-sm;
+    }
+
+    /* ─── Locked Overlay ──────────────────────────────────────── */
+    .locked-overlay {
+        @apply absolute inset-0 bg-neutral-900/60 backdrop-blur-sm rounded-2xl flex flex-col items-center justify-center text-white;
+    }
+
+    /* ─── Table ───────────────────────────────────────────────── */
+    .wk-table {
+        @apply w-full text-sm;
+    }
+
+    .wk-table thead th {
+        @apply px-4 py-3 text-left text-xs font-semibold uppercase tracking-wider text-neutral-400 border-b border-neutral-100;
+    }
+
+    .wk-table tbody td {
+        @apply px-4 py-3.5 text-neutral-700 border-b border-neutral-50;
+    }
+
+    .wk-table tbody tr:hover td {
+        @apply bg-neutral-50;
+    }
+
+    .wk-table tbody tr:last-child td {
+        @apply border-b-0;
+    }
+
+    /* ─── Section title ───────────────────────────────────────── */
+    .section-title {
+        @apply text-base font-bold text-neutral-800;
+    }
+
+    .section-sub {
+        @apply text-xs text-neutral-400 font-normal mt-0.5;
+    }
+}
+
+@layer utilities {
+    .animate-fade-in {
+        animation: fadeIn 0.3s ease forwards;
+    }
+
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(6px); }
+        to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .text-gradient-sage {
+        background: linear-gradient(135deg, #5c7d62, #8fb894);
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        background-clip: text;
+    }
+
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+}
