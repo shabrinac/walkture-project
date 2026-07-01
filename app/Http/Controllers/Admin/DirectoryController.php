@@ -4,10 +4,13 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\PhotographerDirectory;
+use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 
 class DirectoryController extends Controller
 {
+    public function __construct(private CloudinaryService $storage) {}
+
     public function index()
     {
         $photographers = PhotographerDirectory::orderByDesc('is_active')
@@ -39,25 +42,34 @@ class DirectoryController extends Controller
         $validated = $request->validate([
             'full_name'      => 'required|string|max:255',
             'specialty'      => 'required|string|max:255',
+            'avatar'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
             'avatar_url'     => 'nullable|url|max:2048',
             'portfolio_url'  => 'nullable|url|max:2048',
             'whatsapp_link'  => 'nullable|url|max:2048',
             'instagram_link' => 'nullable|url|max:2048',
             'is_active'      => 'boolean',
             'paid_until'     => 'nullable|date',
-            // Pricing packages — each key is nullable
             'packages'       => 'nullable|array',
-            'packages.basic.price'       => 'nullable|string|max:100',
-            'packages.basic.description' => 'nullable|string|max:500',
-            'packages.standard.price'    => 'nullable|string|max:100',
+            'packages.basic.price'          => 'nullable|string|max:100',
+            'packages.basic.description'    => 'nullable|string|max:500',
+            'packages.standard.price'       => 'nullable|string|max:100',
             'packages.standard.description' => 'nullable|string|max:500',
-            'packages.premium.price'     => 'nullable|string|max:100',
+            'packages.premium.price'        => 'nullable|string|max:100',
             'packages.premium.description'  => 'nullable|string|max:500',
-            'packages.fullday.price'     => 'nullable|string|max:100',
+            'packages.fullday.price'        => 'nullable|string|max:100',
             'packages.fullday.description'  => 'nullable|string|max:500',
         ]);
 
         $validated['is_active'] = $request->boolean('is_active', true);
+
+        // Upload avatar to Cloudinary
+        if ($request->hasFile('avatar')) {
+            $validated['avatar_url'] = $this->storage->store(
+                $request->file('avatar'),
+                'photographers'
+            );
+        }
+        unset($validated['avatar']);
 
         // Build pricing_packages JSON from packages input
         $validated['pricing_packages'] = $this->buildPricingPackages($request->input('packages', []));
@@ -77,6 +89,7 @@ class DirectoryController extends Controller
         $validated = $request->validate([
             'full_name'      => 'required|string|max:255',
             'specialty'      => 'required|string|max:255',
+            'avatar'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:3072',
             'avatar_url'     => 'nullable|url|max:2048',
             'portfolio_url'  => 'nullable|url|max:2048',
             'whatsapp_link'  => 'nullable|url|max:2048',
@@ -96,6 +109,19 @@ class DirectoryController extends Controller
 
         $validated['is_active'] = $request->boolean('is_active', false);
 
+        // Upload new avatar to Cloudinary → delete old one from Cloudinary
+        if ($request->hasFile('avatar')) {
+            if ($photographer->avatar_url && str_contains($photographer->avatar_url, 'cloudinary.com')) {
+                $this->storage->delete($photographer->avatar_url);
+            }
+
+            $validated['avatar_url'] = $this->storage->store(
+                $request->file('avatar'),
+                'photographers'
+            );
+        }
+        unset($validated['avatar']);
+
         // Build pricing_packages JSON
         $validated['pricing_packages'] = $this->buildPricingPackages($request->input('packages', []));
         unset($validated['packages']);
@@ -106,11 +132,17 @@ class DirectoryController extends Controller
                          ->with('success', $photographer->full_name . ' updated successfully.');
     }
 
-    /** Remove a photographer from the directory */
+    /** Remove a photographer (also removes avatar from Cloudinary) */
     public function destroy($id)
     {
         $photographer = PhotographerDirectory::findOrFail($id);
         $name = $photographer->full_name;
+
+        // Clean up avatar from Cloudinary
+        if ($photographer->avatar_url && str_contains($photographer->avatar_url, 'cloudinary.com')) {
+            $this->storage->delete($photographer->avatar_url);
+        }
+
         $photographer->delete();
 
         return redirect()->route('admin.directory')

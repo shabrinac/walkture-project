@@ -23,7 +23,8 @@
                 </div>
             </div>
 
-            <form method="POST" action="{{ route('admin.directory.store') }}" class="px-6 py-6 space-y-5">
+            <form method="POST" action="{{ route('admin.directory.store') }}" class="px-6 py-6 space-y-5"
+                  enctype="multipart/form-data">
                 @csrf
 
                 @if($errors->any())
@@ -56,13 +57,28 @@
                     </div>
                 </div>
 
-                {{-- Avatar URL --}}
+                {{-- Avatar Upload --}}
                 <div>
-                    <label for="ph-avatar" class="block text-[12px] font-bold text-[#424842] uppercase tracking-widest mb-1.5">Avatar / Profile Photo URL</label>
-                    <input id="ph-avatar" name="avatar_url" type="url" value="{{ old('avatar_url') }}"
-                           placeholder="https://example.com/photo.jpg"
-                           class="w-full px-3 py-2.5 border border-[#c2c8c0] rounded-xl text-[14px] outline-none transition-colors"
-                           onfocus="this.style.borderColor='#7ba082'" onblur="this.style.borderColor='#c2c8c0'">
+                    <label class="block text-[12px] font-bold text-[#424842] uppercase tracking-widest mb-1.5">Avatar / Profile Photo</label>
+                    <div class="space-y-2">
+                        {{-- File upload --}}
+                        <div class="flex items-center gap-3">
+                            <label for="ph-avatar-file"
+                                   class="flex items-center gap-2 px-4 py-2.5 border border-dashed border-[#c2c8c0] rounded-xl text-[13px] text-[#727971] cursor-pointer hover:border-[#7ba082] hover:text-[#43664c] transition-colors">
+                                <span class="material-symbols-outlined" style="font-size:18px">upload</span>
+                                Upload image
+                            </label>
+                            <span class="text-[12px] text-[#727971]" id="ph-avatar-filename">JPG, PNG or WebP · max 3 MB</span>
+                            <input id="ph-avatar-file" name="avatar" type="file" accept="image/jpeg,image/png,image/webp" class="hidden"
+                                   onchange="document.getElementById('ph-avatar-filename').textContent = this.files[0]?.name || 'No file chosen'">
+                        </div>
+                        {{-- Or paste a URL --}}
+                        <input id="ph-avatar" name="avatar_url" type="url" value="{{ old('avatar_url') }}"
+                               placeholder="Or paste an image URL…"
+                               class="w-full px-3 py-2.5 border border-[#c2c8c0] rounded-xl text-[13px] outline-none transition-colors"
+                               onfocus="this.style.borderColor='#7ba082'" onblur="this.style.borderColor='#c2c8c0'">
+                        <p class="text-[11px] text-[#727971]">If both are provided, the uploaded file takes priority.</p>
+                    </div>
                 </div>
 
                 {{-- Portfolio URL --}}

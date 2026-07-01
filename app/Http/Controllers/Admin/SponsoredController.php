@@ -4,13 +4,15 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Spot;
+use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 
 class SponsoredController extends Controller
 {
+    public function __construct(private CloudinaryService $storage) {}
+
     public function index()
     {
-        // All spots with sponsored status shown first
         $spots = Spot::orderByDesc('is_sponsored')
                      ->orderBy('name')
                      ->get();
@@ -30,7 +32,7 @@ class SponsoredController extends Controller
     public function show($id)
     {
         $spot = Spot::findOrFail($id);
-        return view('admin.sponsored-places.show', compact('spot'));
+        return view('admin.spots.show', compact('spot'));
     }
 
     /** Persist a new sponsored spot */
@@ -42,6 +44,7 @@ class SponsoredController extends Controller
             'latitude'      => 'required|numeric|between:-90,90',
             'longitude'     => 'required|numeric|between:-180,180',
             'description'   => 'nullable|string',
+            'image'         => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'image_url'     => 'nullable|url|max:2048',
             'promo_detail'  => 'nullable|string',
             'zone_polygon'  => 'nullable|string',
@@ -49,6 +52,15 @@ class SponsoredController extends Controller
         ]);
 
         $validated['is_sponsored'] = true;
+
+        // Upload image to Cloudinary for auto-optimization
+        if ($request->hasFile('image')) {
+            $validated['image_url'] = $this->storage->store(
+                $request->file('image'),
+                'spots'
+            );
+            unset($validated['image']);
+        }
 
         Spot::create($validated);
 
@@ -67,9 +79,23 @@ class SponsoredController extends Controller
             'latitude'     => 'required|numeric|between:-90,90',
             'longitude'    => 'required|numeric|between:-180,180',
             'description'  => 'nullable|string',
+            'image'        => 'nullable|image|mimes:jpg,jpeg,png,webp|max:5120',
             'image_url'    => 'nullable|url|max:2048',
             'promo_detail' => 'nullable|string',
         ]);
+
+        // Upload new image to Cloudinary → delete old one from Cloudinary
+        if ($request->hasFile('image')) {
+            if ($spot->image_url && str_contains($spot->image_url, 'cloudinary.com')) {
+                $this->storage->delete($spot->image_url);
+            }
+
+            $validated['image_url'] = $this->storage->store(
+                $request->file('image'),
+                'spots'
+            );
+            unset($validated['image']);
+        }
 
         $spot->update($validated);
 
@@ -77,11 +103,17 @@ class SponsoredController extends Controller
                          ->with('success', 'Spot "' . $spot->name . '" updated successfully.');
     }
 
-    /** Delete a spot */
+    /** Delete a spot (also removes its image from Cloudinary) */
     public function destroy($id)
     {
         $spot = Spot::findOrFail($id);
         $name = $spot->name;
+
+        // Clean up image from Cloudinary
+        if ($spot->image_url && str_contains($spot->image_url, 'cloudinary.com')) {
+            $this->storage->delete($spot->image_url);
+        }
+
         $spot->delete();
 
         return redirect()->route('admin.sponsored-places')

@@ -3,12 +3,14 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Storage;
 
 class ProfileController extends Controller
 {
+    public function __construct(private CloudinaryService $storage) {}
+
     public function index()
     {
         $user = Auth::user();
@@ -16,7 +18,7 @@ class ProfileController extends Controller
     }
 
     /**
-     * Update profile picture (avatar).
+     * Update profile picture (avatar) — uploads to Cloudinary.
      */
     public function updateAvatar(Request $request)
     {
@@ -26,15 +28,18 @@ class ProfileController extends Controller
 
         $user = Auth::user();
 
-        // Store the uploaded file in the public disk under 'avatars/'
-        $path = $request->file('avatar')->store('avatars', 'public');
-
-        // Delete old avatar if it exists and is not a URL
-        if ($user->avatar_url && !str_starts_with($user->avatar_url, 'http')) {
-            Storage::disk('public')->delete($user->avatar_url);
+        // Delete old avatar from Cloudinary if it was stored there
+        if ($user->avatar_url && str_contains($user->avatar_url, 'cloudinary.com')) {
+            $this->storage->delete($user->avatar_url);
         }
 
-        $user->update(['avatar_url' => $path]);
+        // Upload new avatar to Cloudinary
+        $avatarUrl = $this->storage->store(
+            $request->file('avatar'),
+            'avatars'
+        );
+
+        $user->update(['avatar_url' => $avatarUrl]);
 
         return redirect()->route('user.profile')
                          ->with('success', 'Profile picture updated successfully.');

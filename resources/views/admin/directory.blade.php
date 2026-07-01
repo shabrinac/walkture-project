@@ -144,7 +144,8 @@
             </div>
 
             {{-- Modal Form --}}
-            <form method="POST" action="{{ route('admin.directory.store') }}" class="wt-modal-body">
+            <form method="POST" action="{{ route('admin.directory.store') }}" class="wt-modal-body"
+                  enctype="multipart/form-data">
                 @csrf
 
                 @if($errors->any())
@@ -173,9 +174,21 @@
                 </div>
 
                 <div>
-                    <label for="ph-avatar" class="wt-label">Avatar / Profile Photo URL</label>
-                    <input id="ph-avatar" name="avatar_url" type="url" value="{{ old('avatar_url') }}"
-                           placeholder="https://example.com/photo.jpg" class="wt-input">
+                    <label class="wt-label">Avatar / Profile Photo</label>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-3">
+                            <label for="ph-avatar-file"
+                                   class="flex items-center gap-2 px-4 py-2 border border-dashed border-[#c2c8c0] rounded-xl text-[13px] text-[#727971] cursor-pointer hover:border-[#7ba082] hover:text-[#43664c] transition-colors">
+                                <span class="material-symbols-outlined" style="font-size:16px">upload</span>
+                                Upload image
+                            </label>
+                            <span class="text-[12px] text-[#727971]" id="ph-avatar-fname">JPG, PNG or WebP &middot; max 3 MB</span>
+                            <input id="ph-avatar-file" name="avatar" type="file" accept="image/jpeg,image/png,image/webp" class="hidden"
+                                   onchange="document.getElementById('ph-avatar-fname').textContent = this.files[0]?.name || 'No file chosen'">
+                        </div>
+                        <input id="ph-avatar" name="avatar_url" type="url" value="{{ old('avatar_url') }}"
+                               placeholder="Or paste an image URL…" class="wt-input text-[13px]">
+                    </div>
                 </div>
 
                 <div>
@@ -268,7 +281,8 @@
                 </button>
             </div>
 
-            <form id="dir-edit-form" method="POST" action="" class="wt-modal-body">
+            <form id="dir-edit-form" method="POST" action="" class="wt-modal-body"
+                  enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
 
@@ -289,8 +303,20 @@
                 </div>
 
                 <div>
-                    <label for="edit-ph-avatar" class="wt-label">Avatar / Profile Photo URL</label>
-                    <input id="edit-ph-avatar" name="avatar_url" type="url" class="wt-input" placeholder="https://example.com/photo.jpg">
+                    <label class="wt-label">Avatar / Profile Photo</label>
+                    <div class="space-y-2">
+                        <div class="flex items-center gap-3">
+                            <label for="edit-ph-avatar-file"
+                                   class="flex items-center gap-2 px-4 py-2 border border-dashed border-[#c2c8c0] rounded-xl text-[13px] text-[#727971] cursor-pointer hover:border-[#7ba082] hover:text-[#43664c] transition-colors">
+                                <span class="material-symbols-outlined" style="font-size:16px">upload</span>
+                                Upload new image
+                            </label>
+                            <span class="text-[12px] text-[#727971]" id="edit-ph-avatar-fname">Leave empty to keep existing</span>
+                            <input id="edit-ph-avatar-file" name="avatar" type="file" accept="image/jpeg,image/png,image/webp" class="hidden"
+                                   onchange="document.getElementById('edit-ph-avatar-fname').textContent = this.files[0]?.name || 'Leave empty to keep existing'">
+                        </div>
+                        <input id="edit-ph-avatar" name="avatar_url" type="url" class="wt-input text-[13px]" placeholder="Or paste a new image URL…">
+                    </div>
                 </div>
 
                 <div>
