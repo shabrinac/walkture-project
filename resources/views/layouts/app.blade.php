@@ -6,6 +6,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <meta name="description" content="{{ $metaDescription ?? 'Walkture — Discover aesthetic photo spots & connect with street photographers in Samarinda.' }}">
     <title>{{ $title ?? 'Walkture' }} — Aesthetic Photo Spot GIS</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/Walkture Logo.png') }}">
 
     {{-- Inter & Material Symbols --}}
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -141,9 +142,8 @@
     <aside id="wt-sidebar">
         {{-- Logo & Brand --}}
         <div class="flex items-center gap-3 px-5 h-16 border-b border-[#e5e7eb] flex-shrink-0">
-            <div class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0" style="background:#43664c">
-                <span class="material-symbols-outlined text-white" style="font-size:18px">route</span>
-            </div>
+            <img src="{{ asset('images/Walkture Logo.png') }}" alt="Walkture"
+                 class="h-9 w-auto object-contain flex-shrink-0">
             <div class="flex-1 min-w-0">
                 <p class="text-[15px] font-bold text-[#141b2b] leading-none">Walkture</p>
                 <p class="text-[11px] text-[#727971] mt-0.5">
@@ -242,9 +242,15 @@
         {{-- User Info Footer --}}
         <div class="border-t border-[#e5e7eb] p-4 flex-shrink-0">
             <div class="flex items-center gap-3">
-                <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-sm" style="background:#7ba082">
-                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-                </div>
+                @if(auth()->user()->avatar_url)
+                    <img src="{{ auth()->user()->avatar_url }}"
+                         alt="{{ auth()->user()->name }}"
+                         class="w-9 h-9 rounded-full object-cover flex-shrink-0 ring-2 ring-[#c5eccb]">
+                @else
+                    <div class="w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0 text-white font-bold text-sm" style="background:#7ba082">
+                        {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                    </div>
+                @endif
                 <div class="flex-1 min-w-0">
                     <p class="text-[13px] font-semibold text-[#141b2b] truncate">{{ auth()->user()->name }}</p>
                     <p class="text-[11px] text-[#727971] truncate">{{ auth()->user()->email }}</p>
@@ -269,10 +275,8 @@
 
         {{-- Brand in header --}}
         <div class="flex items-center gap-2 flex-shrink-0">
-            <div class="w-7 h-7 rounded-lg flex items-center justify-center" style="background:#43664c">
-                <span class="material-symbols-outlined text-white" style="font-size:14px">route</span>
-            </div>
-            <span class="text-[15px] font-bold text-[#141b2b] hidden sm:block">Walkture</span>
+            <img src="{{ asset('images/Walkture Logo.png') }}" alt="Walkture"
+                 class="h-8 w-auto object-contain">
         </div>
 
         {{-- Page Title (injected from view) --}}
@@ -292,10 +296,17 @@
             </a>
 
             {{-- User avatar button --}}
-            <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold cursor-pointer" style="background:#7ba082"
-                 onclick="toggleSidebar()" title="Open menu">
-                {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
-            </div>
+            @if(auth()->user()->avatar_url)
+                <img src="{{ auth()->user()->avatar_url }}"
+                     alt="{{ auth()->user()->name }}"
+                     class="w-8 h-8 rounded-full object-cover cursor-pointer ring-2 ring-[#7ba082] hover:ring-[#43664c] transition-all"
+                     onclick="toggleSidebar()" title="Open menu">
+            @else
+                <div class="w-8 h-8 rounded-full flex items-center justify-center text-white text-sm font-bold cursor-pointer hover:opacity-80 transition-opacity" style="background:#7ba082"
+                     onclick="toggleSidebar()" title="Open menu">
+                    {{ strtoupper(substr(auth()->user()->name, 0, 1)) }}
+                </div>
+            @endif
         </div>
     </header>
 
