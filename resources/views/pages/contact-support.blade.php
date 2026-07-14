@@ -2,8 +2,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>Contact Support — Walkture</title>
+    <link rel="icon" type="image/png" href="{{ asset('images/Walkture Logo.png') }}">
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;600;700&family=Material+Symbols+Outlined:wght,FILL@400,0&display=swap" rel="stylesheet">
     @vite(['resources/css/app.css','resources/js/app.js'])
     <style>* { font-family:'Be Vietnam Pro',sans-serif; } .material-symbols-outlined{font-variation-settings:'FILL' 0,'wght' 400,'GRAD' 0,'opsz' 24;vertical-align:middle;} .auth-input{width:100%;padding:11px 14px;border:1px solid #c2c8c0;border-radius:10px;background:#fff;font-size:14px;color:#141b2b;outline:none;transition:border-color .15s,box-shadow .15s;} .auth-input:focus{border-color:#7ba082;box-shadow:0 0 0 3px rgba(123,160,130,.18);}</style>
