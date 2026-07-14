@@ -38,21 +38,25 @@ class GuestController extends Controller
             'message' => 'required|string|max:5000',
         ]);
 
-        // Persist to DB
+        // Always persist to DB — this must never be blocked by a mail failure
         ContactMessage::create($validated);
 
-        // Extract mail-specific variables
-        $userSubject = $request->input('subject');
-        $messageBody = $request->input('message');
-
-        // Forward email to support inbox
+        // Send notification email — wrapped so a mail config issue
+        // never causes a 500 for the user submitting the form.
         try {
-            Mail::to('rinaqonitah@gmail.com')->send(new ContactSupportMail($userSubject, $messageBody));
-        } catch (\Exception $e) {
-            // Log silently — don't fail the user if mail config is missing
-            Log::warning('Contact form email failed: ' . $e->getMessage());
-        }
+            Mail::to('rinaqonitah@gmail.com')
+                ->send(new ContactSupportMail($validated['subject'], $validated['message']));
 
-        return back()->with('success', 'Your message has been sent successfully!');
+            return back()->with('success', 'Pesan berhasil dikirim! Kami akan membalas dalam 24 jam.');
+
+        } catch (\Throwable $e) {
+            // Log the real error so it is visible in Railway logs
+            Log::error('[ContactSupport] Mail failed: ' . $e->getMessage(), [
+                'exception' => $e,
+            ]);
+
+            // Message was saved to DB; inform user without exposing internals
+            return back()->with('error', 'Gagal mengirim pesan melalui email, silakan coba lagi atau hubungi kami langsung.');
+        }
     }
 }

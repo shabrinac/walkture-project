@@ -55,10 +55,20 @@
         {{-- Contact form --}}
         <div class="lg:col-span-2 bg-white border border-[#e5e7eb] rounded-2xl p-8">
             <h2 class="text-[17px] font-bold text-[#141b2b] mb-6">Send a Message</h2>
+
+            {{-- Success flash --}}
             @if(session('success'))
                 <div class="mb-5 px-4 py-3 bg-[#c5eccb] border border-[#a9d0b0] rounded-xl text-sm text-[#14361f] flex items-center gap-2">
                     <span class="material-symbols-outlined" style="font-size:18px;color:#43664c">check_circle</span>
                     {{ session('success') }}
+                </div>
+            @endif
+
+            {{-- Error flash --}}
+            @if(session('error'))
+                <div class="mb-5 px-4 py-3 bg-red-50 border border-red-200 rounded-xl text-sm text-red-700 flex items-center gap-2">
+                    <span class="material-symbols-outlined" style="font-size:18px;color:#ba1a1a">error</span>
+                    {{ session('error') }}
                 </div>
             @endif
             <form method="POST" action="{{ route('guest.contact.store') }}" id="contact-form">
