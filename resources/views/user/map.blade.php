@@ -176,6 +176,14 @@
                 ? `<span style="display:inline-block;margin-top:4px;background:#c5eccb;color:#43664c;font-size:10px;font-weight:700;padding:2px 8px;border-radius:999px">★ Sponsored</span>`
                 : '';
 
+            const detailUrl = `/spots/${spot.id}`;
+            const detailBtn = `
+                <a href="${detailUrl}"
+                   style="display:block;margin-top:10px;text-align:center;padding:7px 0;background:#43664c;color:#fff;font-size:12px;font-weight:700;border-radius:8px;text-decoration:none;letter-spacing:.03em;transition:background .15s"
+                   onmouseover="this.style.background='#33503c'"
+                   onmouseout="this.style.background='#43664c'"
+                >Lihat Detail</a>`;
+
             const marker = L.marker([spot.latitude, spot.longitude], { icon })
                 .addTo(map)
                 .bindPopup(`
@@ -185,6 +193,7 @@
                         ${catHtml}
                         ${descHtml}
                         ${badge}
+                        ${detailBtn}
                     </div>
                 `, { maxWidth: 280 });
 
@@ -200,13 +209,19 @@
                 } catch(e) {}
             }
 
-            // On marker click: clear any existing GeoJSON layers, then show this spot's polygon
+            // On marker click: clear old GeoJSON layers, show this spot's polygon,
+            // then fly to polygon bounds (if present) or to the marker latlng.
             marker.on('click', function() {
                 map.eachLayer(function(layer) {
                     if (layer instanceof L.GeoJSON) { map.removeLayer(layer); }
                 });
                 if (this.polygonData) {
                     this.polygonData.addTo(map);
+                    // Fly to fit the whole polygon on screen
+                    map.flyToBounds(this.polygonData.getBounds(), { padding: [40, 40], duration: 1.2 });
+                } else {
+                    // No polygon — just fly to the marker position
+                    map.flyTo([spot.latitude, spot.longitude], 16, { animate: true, duration: 1.2 });
                 }
             });
 

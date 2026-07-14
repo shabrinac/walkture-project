@@ -260,7 +260,12 @@
                     <img src="${spot.image}" alt="${spot.name}"
                          style="width:100%;height:90px;object-fit:cover;border-radius:8px;margin-bottom:8px;display:block">
                     <strong style="font-size:13px;color:#111827">${spot.name}</strong>
-                    <p style="font-size:11px;color:#6b7280;margin:4px 0 0">${spot.desc}</p>
+                    <p style="font-size:11px;color:#6b7280;margin:4px 0 8px">${spot.desc}</p>
+                    <a href="/spots/${idx + 1}"
+                       style="display:block;text-align:center;padding:7px 0;background:#43664c;color:#fff;font-size:12px;font-weight:700;border-radius:8px;text-decoration:none;letter-spacing:.03em;transition:background .15s"
+                       onmouseover="this.style.background='#33503c'"
+                       onmouseout="this.style.background='#43664c'"
+                    >Lihat Detail</a>
                 </div>`;
 
             const marker = L.marker([spot.lat, spot.lng], { icon })
@@ -276,6 +281,11 @@
                 .bindPopup(popupHtml, {
                     maxWidth: 200,
                 });
+
+            // Auto-zoom to spot on marker click
+            marker.on('click', function() {
+                map.flyTo([spot.lat, spot.lng], 16, { animate: true, duration: 1.2 });
+            });
         });
 
         // Photo Walk polyline — rute jalan foto di area Tepian Mahakam
@@ -295,8 +305,13 @@
             [-0.4950, 117.1620],
             [-0.5080, 117.1550]
         ];
-        L.polygon(zoneCoords, { color: '#a78bfa', fillColor: '#a78bfa', fillOpacity: 0.1, weight: 2 }).addTo(map)
+        const zonePolygon = L.polygon(zoneCoords, { color: '#a78bfa', fillColor: '#a78bfa', fillOpacity: 0.1, weight: 2 }).addTo(map)
             .bindPopup('<strong style="font-family:Nunito">Kawasan Kreatif Samarinda</strong>');
+
+        // Auto-zoom to fit the whole polygon when clicked
+        zonePolygon.on('click', function() {
+            map.flyToBounds(this.getBounds(), { padding: [60, 60], duration: 1.2 });
+        });
     });
     </script>
     @endpush
